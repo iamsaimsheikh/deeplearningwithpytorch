@@ -1,61 +1,45 @@
 import torch
 import torch.nn as nn
-import torch.optim as optim
+import numpy as np
+from sklearn import datasets
+from sklearn.preprocessing import StandardScaler
+import matplotlib.pyplot as plt
 
-# Step 1: Prepare the dataset
-# Input data (features)
-X = torch.tensor([[1.0], [2.0], [3.0], [4.0]], dtype=torch.float32)
-# Target data (labels)
-Y = torch.tensor([[2.0], [4.0], [6.0], [8.0]], dtype=torch.float32)
+# 1. Create and prepare dataset
+X_numpy, Y_numpy = datasets.make_regression(n_samples=100, n_features=1, noise=20, random_state=1)
 
-n_samples, n_features = X.shape
+# Normalize the data
+scaler = StandardScaler()
+X_numpy = scaler.fit_transform(X_numpy)
 
-input_size = n_features
-output_size = n_features
+# Convert to tensors
+X = torch.tensor(X_numpy, dtype=torch.float32)
+y = torch.tensor(Y_numpy, dtype=torch.float32).view(-1, 1)
 
-# Step 2: Define the Linear Regression model
-class LinearRegressionModel(nn.Module):
-    def __init__(self):
-        super(LinearRegressionModel, self).__init__()
-        # One input feature and one output feature
-        self.linear = nn.Linear(input_size, output_size)
-
-    def forward(self, x):
-        return self.linear(x)
-
-# Instantiate the model
-model = LinearRegressionModel()
-
-# Step 3: Define the loss function and optimizer
-# Mean Squared Error loss
+# 2. Model, loss function, and optimizer
+model = nn.Linear(X.shape[1], 1)
 criterion = nn.MSELoss()
-# Stochastic Gradient Descent (SGD) optimizer
-optimizer = optim.SGD(model.parameters(), lr=0.01)
+optimizer = torch.optim.SGD(model.parameters(), lr=0.001)  # Reduced learning rate
 
-# Step 4: Training loop
-# Number of epochs (iterations over the entire dataset)
-epochs = 100
+# 3. Training loop
+epochs = 1000
 
 for epoch in range(epochs):
-    # Forward pass: Compute predicted Y by passing X to the model
     y_pred = model(X)
+    loss = criterion(y_pred, y)
 
-    # Compute the loss
-    loss = criterion(y_pred, Y)
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
 
-    # Zero gradients, backward pass, and update weights
-    optimizer.zero_grad()  # Zero the gradients before backward pass
-    loss.backward()  # Backward pass to compute gradients
-    optimizer.step()  # Update the weights
-
-    # Print progress every 10 epochs
-    if (epoch + 1) % 10 == 0:
-        [w,b] = model.parameters()
-        print(f'w:{w[0][0].item()} - b:{b[0]}')
+    if (epoch + 1) % 100 == 0:
         print(f'Epoch [{epoch + 1}/{epochs}], Loss: {loss.item():.4f}')
 
-# Step 5: Test the model (inference)
-# Make a prediction for a new input value, e.g., X=5
-new_input = torch.tensor([[5.0]], dtype=torch.float32)
-predicted = model(new_input).item()
-print(f'Prediction for input 5: {predicted:.3f}')
+# 4. Plotting
+with torch.no_grad():
+    predicted = model(X).numpy()
+
+plt.plot(X_numpy, Y_numpy, 'ro', label='Original data')
+plt.plot(X_numpy, predicted, 'b', label='Fitted line')
+plt.legend()
+plt.show()
