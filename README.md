@@ -28,3 +28,5 @@ I am using Python 3.12, packaged by Anaconda, to manage the dependencies and env
   - **Problem Solved**: Binary classification
   - **Function Type**: Activation Function
   - **Description**: Sigmoid squashes the output to be between 0 and 1, making it suitable for binary classification tasks. It is used to convert raw output scores (logits) into probabilities for binary classification problems.
+- **Activation Functions**
+  - Understanding the commonly used activation functions and pytorch implementation. Activation functions are used to introduce non-linearity in neural networks for better model learning.
