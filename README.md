@@ -14,3 +14,4 @@ I am using Python 3.12, packaged by Anaconda, to manage the dependencies and env
 - **Linear Regression**: Implementing a simple linear regression model from scratch using PyTorch.
 - **Logistic Regression**: Building a logistic regression model for binary classification tasks.
 - **Dataset and DataLoader**: Understanding how to effectively manage and batch data for training deep learning models in PyTorch.
+- **Transforms in PyTorch**: Applying transformations to data using PyTorch’s `torchvision.transforms` module.
